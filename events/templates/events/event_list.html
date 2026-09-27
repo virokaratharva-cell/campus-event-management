@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% block title %}Explore Events - Campus Events Management System{% endblock %}
+
+{% block content %}
+<!-- Hero / Overview Banner -->
+<section class="hero-banner rounded-4 p-4 p-md-5 mb-4 shadow-sm position-relative overflow-hidden">
+    <div class="row align-items-center">
+        <div class="col-lg-7">
+            <span class="badge bg-white text-primary px-3 py-2 rounded-pill fw-semibold shadow-sm mb-3">
+                <i class="bi bi-stars text-warning me-1"></i> Official Campus Portal
+            </span>
+            <h1 class="display-6 fw-extrabold text-white mb-2">Campus Events &amp; Activities</h1>
+            <p class="text-white-50 lead fs-6 mb-4 mb-lg-0">
+                Discover academic seminars, tech hackathons, cultural festivals, and departmental workshops. Manage all event schedules effortlessly.
+            </p>
+        </div>
+        <div class="col-lg-5">
+            <div class="row g-2 justify-content-lg-end">
+                <div class="col-4 col-sm-4">
+                    <div class="stat-pill text-center p-3 rounded-3 shadow-sm bg-white">
+                        <div class="stat-number fw-bold text-primary fs-3">{{ total_events }}</div>
+                        <div class="stat-label text-muted small fw-medium">Total Events</div>
+                    </div>
+                </div>
+                <div class="col-4 col-sm-4">
+                    <div class="stat-pill text-center p-3 rounded-3 shadow-sm bg-white">
+                        <div class="stat-number fw-bold text-success fs-3">{{ total_locations }}</div>
+                        <div class="stat-label text-muted small fw-medium">Venues</div>
+                    </div>
+                </div>
+                <div class="col-4 col-sm-4">
+                    <div class="stat-pill text-center p-3 rounded-3 shadow-sm bg-white">
+                        <div class="stat-number fw-bold text-info fs-3">{{ total_capacity }}</div>
+                        <div class="stat-label text-muted small fw-medium">Seats Total</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Filter & Search Toolbar -->
+<section class="toolbar-wrapper bg-white p-3 rounded-3 shadow-sm mb-4 border">
+    <div class="row align-items-center g-3">
+        <div class="col-md-7">
+            <form method="GET" action="{% url 'events:event_list' %}" class="d-flex gap-2">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input 
+                        type="text" 
+                        name="q" 
+                        value="{{ query }}" 
+                        class="form-control border-start-0 bg-light" 
+                        placeholder="Search by event title, venue, or organizer..."
+                    >
+                    <button type="submit" class="btn btn-primary px-4 fw-medium">Search</button>
+                </div>
+                {% if query %}
+                    <a href="{% url 'events:event_list' %}" class="btn btn-outline-secondary d-flex align-items-center" title="Clear Search">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                {% endif %}
+            </form>
+        </div>
+        <div class="col-md-5 text-md-end">
+            <a href="{% url 'events:event_create' %}" class="btn btn-primary fw-semibold px-3 shadow-sm">
+                <i class="bi bi-calendar-plus me-1"></i> Add New Event
+            </a>
+        </div>
+    </div>
+    {% if query %}
+        <div class="mt-2 text-muted small">
+            <i class="bi bi-funnel-fill text-primary me-1"></i> Showing results matching: <strong>"{{ query }}"</strong> 
+            <span class="badge bg-secondary-subtle text-secondary ms-1">{{ events|length }} found</span>
+        </div>
+    {% endif %}
+</section>
+
+<!-- Event Cards Grid -->
+<div class="row g-4">
+    {% for event in events %}
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 border-0 event-card shadow-sm rounded-3">
+                <div class="card-body p-4 d-flex flex-column">
+                    <!-- Top Row: Date Tile & Location Badge -->
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="date-tile text-center px-2 py-1 rounded-2 shadow-xs">
+                                <span class="date-month text-uppercase fw-bold text-primary">{{ event.start_time|date:"M" }}</span>
+                                <span class="date-day fw-extrabold text-dark fs-5">{{ event.start_time|date:"d" }}</span>
+                            </div>
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 small">
+                                <i class="bi bi-geo-alt-fill me-1"></i>{{ event.location }}
+                            </span>
+                        </div>
+                        <span class="badge bg-secondary-subtle text-secondary small fw-medium">
+                            <i class="bi bi-people-fill me-1"></i>{{ event.capacity }} seats
+                        </span>
+                    </div>
+
+                    <!-- Event Title -->
+                    <h5 class="card-title fw-bold mb-2">
+                        <a href="{% url 'events:event_detail' event.pk %}" class="text-decoration-none event-title-link">
+                            {{ event.title }}
+                        </a>
+                    </h5>
+
+                    <!-- Description -->
+                    <p class="card-text text-muted small flex-grow-1 mb-3">
+                        {{ event.description|truncatewords:20 }}
+                    </p>
+
+                    <!-- Meta Details -->
+                    <div class="event-meta-box p-2 rounded-2 mb-3 bg-light small">
+                        <div class="d-flex align-items-center text-secondary mb-1">
+                            <i class="bi bi-clock text-primary me-2"></i>
+                            <span>{{ event.start_time|date:"h:i A" }} &ndash; {{ event.end_time|date:"h:i A" }}</span>
+                        </div>
+                        <div class="d-flex align-items-center text-secondary">
+                            <i class="bi bi-person-badge text-primary me-2"></i>
+                            <span class="text-truncate">{{ event.organizer }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Card Actions -->
+                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                        <a href="{% url 'events:event_detail' event.pk %}" class="btn btn-sm btn-outline-secondary px-3 rounded-2">
+                            <i class="bi bi-eye me-1"></i> Details
+                        </a>
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'events:event_update' event.pk %}" class="btn btn-sm btn-primary px-3 rounded-2" title="Edit Event">
+                                <i class="bi bi-pencil-square me-1"></i> Edit
+                            </a>
+                            <a href="{% url 'events:event_delete' event.pk %}" class="btn btn-sm btn-outline-danger px-2 rounded-2" title="Delete Event">
+                                <i class="bi bi-trash3"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12 py-5 text-center">
+            <div class="empty-state-box p-5 bg-white rounded-4 shadow-sm border mx-auto" style="max-width: 540px;">
+                <div class="empty-icon-circle mx-auto mb-3">
+                    <i class="bi bi-calendar2-x text-primary fs-1"></i>
+                </div>
+                <h4 class="fw-bold text-dark mb-2">No Events Found</h4>
+                {% if query %}
+                    <p class="text-muted small mb-4">No events matched your search keyword "{{ query }}". Try searching with a different term.</p>
+                    <a href="{% url 'events:event_list' %}" class="btn btn-outline-primary px-4 fw-medium">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i> Clear Filter
+                    </a>
+                {% else %}
+                    <p class="text-muted small mb-4">Your campus calendar currently has no scheduled events. Click below to add your first event.</p>
+                    <a href="{% url 'events:event_create' %}" class="btn btn-primary px-4 fw-semibold shadow-sm">
+                        <i class="bi bi-plus-circle-fill me-1"></i> Create First Event
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

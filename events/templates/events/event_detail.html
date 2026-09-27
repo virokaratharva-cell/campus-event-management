@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ event.title }} - Campus Events Management System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center my-2">
+    <div class="col-lg-8 col-md-10">
+        <!-- Back Navigation Breadcrumb -->
+        <div class="mb-3">
+            <a href="{% url 'events:event_list' %}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                <i class="bi bi-arrow-left me-1"></i> Back to All Events
+            </a>
+        </div>
+
+        <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+            <!-- Header Section -->
+            <div class="card-header bg-gradient-primary text-white p-4">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="badge bg-white text-primary px-3 py-2 rounded-pill fw-semibold">
+                        <i class="bi bi-geo-alt-fill me-1"></i>{{ event.location }}
+                    </span>
+                    <span class="badge bg-white bg-opacity-25 text-white px-3 py-2 rounded-pill">
+                        <i class="bi bi-people-fill me-1"></i>{{ event.capacity }} Maximum Attendees
+                    </span>
+                </div>
+                <h2 class="fw-bold mb-1 mt-2 text-white">{{ event.title }}</h2>
+                <div class="text-white-50 small">
+                    <i class="bi bi-building me-1"></i> Organized by: <strong>{{ event.organizer }}</strong>
+                </div>
+            </div>
+
+            <div class="card-body p-4 p-md-5">
+                <!-- Info Chips Grid -->
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6">
+                        <div class="p-3 rounded-3 bg-light border d-flex align-items-center gap-3">
+                            <div class="detail-icon-circle bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="bi bi-calendar-event fs-4"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block fw-semibold text-uppercase">Start Time</small>
+                                <span class="fw-bold text-dark">{{ event.start_time|date:"M d, Y, h:i A" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="p-3 rounded-3 bg-light border d-flex align-items-center gap-3">
+                            <div class="detail-icon-circle bg-success-subtle text-success rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="bi bi-calendar-check fs-4"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block fw-semibold text-uppercase">End Time</small>
+                                <span class="fw-bold text-dark">{{ event.end_time|date:"M d, Y, h:i A" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description Block -->
+                <div class="mb-5">
+                    <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">
+                        <i class="bi bi-card-text text-primary me-2"></i>About This Event
+                    </h5>
+                    <div class="p-4 bg-light rounded-3 text-secondary" style="white-space: pre-line; line-height: 1.7;">
+                        {{ event.description }}
+                    </div>
+                </div>
+
+                <!-- Footer with Timestamps and Actions -->
+                <div class="d-flex flex-wrap justify-content-between align-items-center pt-3 border-top gap-3">
+                    <div class="text-muted small">
+                        <i class="bi bi-clock-history me-1"></i> Created: {{ event.created_at|date:"M d, Y" }} &bull; Updated: {{ event.updated_at|date:"M d, Y" }}
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'events:event_update' event.pk %}" class="btn btn-primary px-4 rounded-3 fw-medium">
+                            <i class="bi bi-pencil-square me-1"></i> Edit Event
+                        </a>
+                        <a href="{% url 'events:event_delete' event.pk %}" class="btn btn-outline-danger px-4 rounded-3 fw-medium">
+                            <i class="bi bi-trash3 me-1"></i> Delete
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
